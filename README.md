@@ -111,7 +111,7 @@ prompts/                # optional — override default prompt templates
 ## Skills Structure (for npx skills add)
 
 ```
-source/skills/
+skills/
   wikime/               # meta-skill (all four operations)
   wiki-ingest/          # ingest skill
   wiki-query/           # query skill
