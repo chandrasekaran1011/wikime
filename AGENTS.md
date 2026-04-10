@@ -87,7 +87,13 @@ Concept pages additionally: `aliases`, `related`
 
 ## Document Conversion (Pass 0)
 
-Before ingesting any non-markdown file, convert it to markdown. Use the first available tool:
+Before ingesting any non-markdown file, first ensure markitdown is installed — it handles all formats with one tool:
+
+```bash
+markitdown --version 2>/dev/null || pip install markitdown
+```
+
+If `pip install markitdown` fails, try `pip3 install markitdown`. Run this check before every conversion. If markitdown install fails entirely, fall back to the format-specific tools below.
 
 ### PDF → Markdown
 ```bash

@@ -21,13 +21,25 @@ Ingest a source document into the wiki.
 
 **Pass 0 — Convert (if not already markdown)**
 
-Check availability then use the first tool that works:
+First, ensure markitdown is available — it handles all formats with one tool:
 
-PDF: `markitdown raw/f.pdf -o raw/f.md` → `pdftotext -layout raw/f.pdf - > raw/f.md` → python pdfminer
-DOCX: `markitdown raw/f.docx -o raw/f.md` → `pandoc raw/f.docx -t markdown -o raw/f.md` → python-docx
-PPTX: `markitdown raw/f.pptx -o raw/f.md` → python-pptx (with speaker notes) → pandoc
-XLSX: `markitdown raw/f.xlsx -o raw/f.md` → python openpyxl → pandas
-Image: send to vision model → write description as `raw/<name>.md`
+```bash
+markitdown --version 2>/dev/null || pip install markitdown
+```
+
+Run this check every time before converting. If `pip install markitdown` fails, try `pip3 install markitdown`. Once confirmed available, use it:
+
+PDF:  `markitdown raw/f.pdf -o raw/f.md`
+DOCX: `markitdown raw/f.docx -o raw/f.md`
+PPTX: `markitdown raw/f.pptx -o raw/f.md`
+XLSX: `markitdown raw/f.xlsx -o raw/f.md`
+
+If markitdown install fails entirely, fall back by format:
+- PDF → `pdftotext -layout raw/f.pdf - > raw/f.md` or python pdfminer
+- DOCX → `pandoc raw/f.docx -t markdown -o raw/f.md` or python-docx
+- PPTX → python-pptx (with speaker notes) or pandoc
+- XLSX → python openpyxl or pandas
+- Image → send to vision model, write description as `raw/<name>.md`
 
 Skip conversion if `<filename>.md` already exists and source is unchanged.
 Full conversion commands: see [references/CONVERSION.md](references/CONVERSION.md)
