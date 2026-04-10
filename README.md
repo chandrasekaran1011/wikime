@@ -120,6 +120,117 @@ graph/          # Layer 3 — auto-generated graph
 
 On every ingest, concept and entity pages are **read then expanded** — not replaced. The wiki gets richer with every document added.
 
+## Customizing the Methodology
+
+wikime ships with general-purpose extraction logic, but you can override any part of it by dropping prompt files into a `prompts/` directory at the root of your project. The LLM reads these files and follows them instead of the built-in defaults.
+
+### Scaffold the prompts directory
+
+```bash
+node /path/to/wikime/init.js --prompts
+```
+
+Or create it manually:
+
+```bash
+mkdir prompts
+```
+
+### Available prompt overrides
+
+There are exactly three prompt files the wiki recognizes. Each fires at a different stage of the ingest workflow:
+
+---
+
+#### `prompts/summarize.md` — Source reading & entity identification
+
+**Fires during:** every ingest, when the LLM first reads a raw document
+**Controls:**
+- What sections to extract (parties, dates, financials, obligations, conditions)
+- What to ignore (boilerplate, repetitive clauses)
+- How to format extracted data (tables, timelines, bullet lists)
+- **Which entities to flag for wiki page creation** — business units, verticals, financials, projects, relationships
+
+> **This is the right place for entity extraction instructions.** Tell it here to identify business units, map project ownership, extract financial figures, and surface relationships between organizations. The LLM will list found entities at the end of the source page so the ingest workflow can create entity pages for each.
+
+Example instructions to put here:
+```markdown
+Extract all named business units and verticals. For each, note:
+- their parent organization
+- any financial exposure or revenue mentioned
+- which projects they own or are party to
+Build a ## Entities Identified section at the end listing every
+organization, unit, vertical, and project found.
+```
+
+---
+
+#### `prompts/write-concept.md` — Concept page structure & relationships
+
+**Fires during:** ingest step 8 — when creating or expanding `wiki/concepts/` pages
+**Controls:**
+- What counts as a concept in your domain (legal clauses, frameworks, risk types, deal structures)
+- Page sections and their order
+- **How to type and label relationships** between concepts (causes, triggers, limits, implements, contradicts)
+- Rules for expanding existing pages when new sources are ingested
+
+> **This is the right place for custom relationship types.** Define named relationships (e.g. `Triggers`, `Limits`, `Implements`) and the LLM will extract and label them consistently across all concept pages, making the knowledge graph far more useful.
+
+Example instructions to put here:
+```markdown
+Extract typed relationships on every concept page:
+- Triggers: [[ClauseA]] triggers [[ObligationB]]
+- Limits: [[ConceptA]] limits [[ConceptB]]
+- Implements: [[SpecificMechanism]] implements [[BroaderFramework]]
+Add a ## Relationships section with these typed links.
+```
+
+> **Note:** Entity *page structure* (fields, sections on entity pages) is not controlled here — that lives in `CLAUDE.md`. This file only controls concept pages.
+
+---
+
+#### `prompts/caption-image.md` — Image description & visual extraction
+
+**Fires during:** ingest step 2 (two-pass), when the LLM opens image files referenced in a document
+**Controls:**
+- How to handle different image types (org charts, process diagrams, scanned tables, signature pages, maps)
+- Whether to transcribe text verbatim or summarize
+- What entities to surface from visual content (org charts often reveal corporate structures not named in body text)
+
+> **Don't skip this if your documents have org charts or financial diagrams.** Org charts are often the richest source of entity relationships — subsidiary chains, ownership percentages, business unit hierarchies — and without instructions the LLM may only give a brief description instead of a structured extraction.
+
+---
+
+### Where to put entity extraction for business units, verticals, financials, project relationships
+
+| What you want to extract | Where to configure it |
+|--------------------------|----------------------|
+| Identify entities from document text | `prompts/summarize.md` — `## Entities Identified` section |
+| Extract financials tied to entities | `prompts/summarize.md` — financial table instructions |
+| Map project ↔ business unit relationships | `prompts/summarize.md` — relationship extraction instructions |
+| Extract entities from org chart images | `prompts/caption-image.md` — org chart instructions |
+| Structure of entity wiki pages | `CLAUDE.md` — entity page format section |
+| Typed relationships between concepts | `prompts/write-concept.md` — relationship types section |
+
+### Example prompt files (legal domain)
+
+See [`example/prompts/`](example/prompts/) for fully worked examples covering:
+- [`summarize.md`](example/prompts/summarize.md) — parties, timeline, financials, obligations, entity identification
+- [`write-concept.md`](example/prompts/write-concept.md) — legal clause pages with typed relationships
+- [`caption-image.md`](example/prompts/caption-image.md) — org charts, signature pages, scanned exhibits
+
+Copy these into your project's `prompts/` directory and adapt to your domain.
+
+### Combining overrides
+
+All three files can be active at once. They fire at different stages and compose cleanly — summarize controls what's pulled from the source, write-concept controls how ideas are structured, caption-image controls visual extraction.
+
+### Co-evolving the schema
+
+For deeper changes — new page types, new frontmatter fields, custom index sections — edit `CLAUDE.md` directly. The prompts directory handles *how* to extract; `CLAUDE.md` handles *what structure* to write into. Both can be changed and will be respected.
+
+---
+
 ## Tips
 
 - Open as an **Obsidian vault** — `[[wikilinks]]`, graph view, and Dataview all work natively
