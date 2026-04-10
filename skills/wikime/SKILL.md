@@ -2,7 +2,7 @@
 name: wikime
 description: Build and maintain a persistent, interlinked knowledge wiki from documents (PDF, DOCX, PPTX, XLSX, MD, images). Implements Karpathy's LLM Wiki pattern — incrementally compiles sources into structured markdown pages that compound over time. Use when the user wants to ingest documents, query a knowledge base, build a wiki from a folder of files, or maintain a persistent knowledge base.
 license: MIT
-compatibility: Works with Claude Code, Codex CLI, OpenCode, Gemini CLI, and any agent that reads AGENTS.md or CLAUDE.md. Document conversion requires one of: markitdown, pandoc, or standard Python libraries (pdfminer, python-docx, python-pptx, openpyxl).
+compatibility: Works with Claude Code, Codex CLI, OpenCode, Gemini CLI, and any agent that reads AGENTS.md or CLAUDE.md. Document conversion requires one of markitdown, pandoc, or standard Python libraries (pdfminer, python-docx, python-pptx, openpyxl).
 metadata:
   author: wikime
   version: "1.0"
