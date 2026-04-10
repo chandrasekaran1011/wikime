@@ -6,47 +6,76 @@ Implements [Andrej Karpathy's LLM Wiki pattern](https://x.com/karpathy/status/20
 
 ## Install
 
-### Option 1 — npx skills add (recommended)
+### Option 1 — Skill (recommended)
+
+Installs the wiki schema globally so any Claude Code session can build and query wikis without any per-project setup.
 
 ```bash
-# Install all four skills (ingest, query, lint, graph):
-npx skills add https://github.com/chandrasekaran1011/wikime --skill wikime
+# Install all five skills at once:
+npx skills add https://github.com/chandrasekaran1011/wikime --all -g
 
-# Or install individual skills:
-npx skills add https://github.com/chandrasekaran1011/wikime --skill wiki-ingest
-npx skills add https://github.com/chandrasekaran1011/wikime --skill wiki-query
-npx skills add https://github.com/chandrasekaran1011/wikime --skill wiki-lint
-npx skills add https://github.com/chandrasekaran1011/wikime --skill wiki-graph
+# Or install individually:
+npx skills add https://github.com/chandrasekaran1011/wikime --skill wikime -g
+npx skills add https://github.com/chandrasekaran1011/wikime --skill wiki-ingest -g
+npx skills add https://github.com/chandrasekaran1011/wikime --skill wiki-query -g
+npx skills add https://github.com/chandrasekaran1011/wikime --skill wiki-lint -g
+npx skills add https://github.com/chandrasekaran1011/wikime --skill wiki-graph -g
 ```
 
-Skills are installed to `.agents/skills/` (cross-client) or `.<client>/skills/` and auto-loaded by any [Agent Skills](https://agentskills.io)-compatible client.
+Once installed, open any project in Claude Code, drop files into `raw/`, and say:
 
-### Option 2 — init.js (Claude Code + Codex)
+```
+ingest raw/report.pdf
+ingest all files in raw/
+what does the wiki say about X?
+lint the wiki
+build the knowledge graph
+```
 
-Copies `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, and slash commands into your project:
+### Option 2 — Slash commands (Claude Code)
+
+If you want `/wiki-ingest`, `/wiki-query`, `/wiki-lint`, `/wiki-graph` as slash commands in a specific project, run `init.js` inside that project:
 
 ```bash
-node /path/to/wikime/skill/init.js
+cd your-project
 
-# With editable prompt templates:
-node /path/to/wikime/skill/init.js --prompts
+# Clone or download wikime, then:
+node /path/to/wikime/init.js
+
+# Also scaffold editable prompt templates:
+node /path/to/wikime/init.js --prompts
 ```
+
+This copies `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, and `.claude/commands/` into your project. Restart Claude Code and the `/wiki-*` commands will appear.
+
+> **Note:** The skill (Option 1) and slash commands (Option 2) are independent. The skill works globally without any per-project files. The slash commands are just a convenience shortcut — they trigger the same behavior.
 
 ## Usage
 
-### Claude Code
+### With the skill installed (any project)
+
 ```
-/wiki-ingest raw/report.pdf          # ingest a file
-/wiki-ingest raw/deck.pptx           # converts PPTX → md, then ingests
+ingest raw/report.pdf
+ingest all files in raw/
+query: what are the main themes?
+what does the wiki say about X?
+compare X and Y from the wiki
+lint the wiki
+build the knowledge graph
+```
+
+### With slash commands installed (Claude Code)
+
+```
+/wiki-ingest raw/report.pdf
+/wiki-ingest raw/deck.pptx
 /wiki-query "what are the main themes?"
-/wiki-query "compare X and Y" --save  # save answer back to wiki
-/wiki-lint                            # health check
-/wiki-lint --save                     # save lint report to wiki/lint-report.md
-/wiki-graph                           # build interactive knowledge graph
-/wiki-graph --no-infer --open         # skip LLM inference, open in browser
+/wiki-lint
+/wiki-graph
 ```
 
 ### Codex / OpenCode / Gemini CLI
+
 ```
 ingest raw/report.pdf
 query: what are the main themes?
@@ -91,43 +120,15 @@ graph/          # Layer 3 — auto-generated graph
 
 On every ingest, concept and entity pages are **read then expanded** — not replaced. The wiki gets richer with every document added.
 
-## Structure (after init)
-
-```
-CLAUDE.md               # schema auto-read by Claude Code
-AGENTS.md               # schema auto-read by Codex / OpenCode
-GEMINI.md               # schema for Gemini CLI
-.claude/commands/
-  wiki-ingest.md        # /wiki-ingest slash command
-  wiki-query.md         # /wiki-query slash command
-  wiki-lint.md          # /wiki-lint slash command
-  wiki-graph.md         # /wiki-graph slash command
-prompts/                # optional — override default prompt templates
-  summarize.md
-  write-concept.md
-  caption-image.md
-```
-
-## Skills Structure (for npx skills add)
-
-```
-skills/
-  wikime/               # meta-skill (all four operations)
-  wiki-ingest/          # ingest skill
-  wiki-query/           # query skill
-  wiki-lint/            # lint skill
-  wiki-graph/           # graph skill (includes vis.js HTML template)
-```
-
 ## Tips
 
 - Open as an **Obsidian vault** — `[[wikilinks]]`, graph view, and Dataview all work natively
 - Use **Obsidian Web Clipper** to clip web articles directly to `raw/`
-- **File query answers back**: `/wiki-query "question" --save` — explorations compound the wiki just like sources do
-- **Lint regularly**: `/wiki-lint` catches orphans, broken links, contradictions, and knowledge gaps
-- **Co-evolve the schema**: edit `CLAUDE.md` / `AGENTS.md` to add domain-specific conventions
+- **File query answers back** — ask "save this answer to the wiki" after a query
+- **Lint regularly** — catches orphans, broken links, contradictions, and knowledge gaps
+- **Co-evolve the schema** — edit `CLAUDE.md` / `AGENTS.md` to add domain-specific conventions
 - The wiki is a **git repo** — version history for free, and LLM agents can `git blame` their own edits
-- **Image two-pass rule**: the LLM reads markdown text first, then opens image files separately
+- **Image two-pass rule** — the LLM reads markdown text first, then opens image files separately
 
 ## License
 

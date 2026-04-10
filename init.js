@@ -184,5 +184,5 @@ Tips:
   • Lint regularly: /wiki-lint
   • Build the graph: /wiki-graph
 
-Docs: https://github.com/your-org/wikime
+Docs: https://github.com/chandrasekaran1011/wikime
 `);
