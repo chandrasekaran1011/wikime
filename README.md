@@ -1,8 +1,28 @@
+<div align="center">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <rect width="96" height="96" rx="20" fill="#1a1a2e"/>
+  <text x="50%" y="68" font-family="Georgia, serif" font-size="64" font-weight="bold" fill="#ffffff" text-anchor="middle">W</text>
+</svg>
+
 # wikime
 
-An LLM Wiki skill for Claude Code, Codex, OpenCode, and Gemini CLI. Drop documents into `raw/`, run one command, get a persistent interlinked knowledge base that compounds over time.
+**An LLM Wiki skill for Claude Code, Codex, OpenCode, and Gemini CLI.**  
+Drop documents into `raw/`, run one command, get a persistent interlinked knowledge base that compounds over time.
 
 Implements [Andrej Karpathy's LLM Wiki pattern](https://x.com/karpathy/status/2039805659525644595).
+
+---
+
+### Knowledge Graph — auto-generated from your wiki
+
+![wikime knowledge graph](assets/graph-preview.png)
+
+*Every ingest enriches the graph. Nodes are sources, entities, and concepts. Edges are extracted wikilinks and inferred relationships.*
+
+---
+
+</div>
 
 ## Install
 
